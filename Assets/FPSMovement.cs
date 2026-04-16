@@ -3,6 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class FPSMovement : MonoBehaviour
 {
+    [Header("References")]
+    public Transform playerCamera;
+
     [Header("Movement Speeds")]
     public float walkSpeed = 4f;
     public float sprintSpeed = 7f;
@@ -17,7 +20,7 @@ public class FPSMovement : MonoBehaviour
 
     [Header("Breathing SFX")]
     public AudioSource breathingSource;
-    public float breathingFadeSpeed = 2f; // How fast the volume fades in/out
+    public float breathingFadeSpeed = 2f;
     private bool isBreathing = false;
     private float targetBreathingVolume = 0f;
 
@@ -52,12 +55,11 @@ public class FPSMovement : MonoBehaviour
         currentStamina = maxStamina;
         targetHeight = standingHeight;
 
-        // Initialize Audio
         if (breathingSource != null)
         {
             breathingSource.loop = true;
-            breathingSource.volume = 0f; // Start silent
-            breathingSource.Play();      // Keep playing but silent
+            breathingSource.volume = 0f;
+            breathingSource.Play();
         }
     }
 
@@ -75,7 +77,6 @@ public class FPSMovement : MonoBehaviour
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
 
-        // Smoothly fade the breathing volume every frame
         if (breathingSource != null)
         {
             breathingSource.volume = Mathf.MoveTowards(breathingSource.volume, targetBreathingVolume, breathingFadeSpeed * Time.deltaTime);
@@ -113,16 +114,13 @@ public class FPSMovement : MonoBehaviour
         }
         currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
 
-        // --- Breathing Fade Logic ---
         float staminaPercent = (currentStamina / maxStamina) * 100f;
 
-        // Trigger fade in at 70%
         if (!isBreathing && staminaPercent <= 70f)
         {
             isBreathing = true;
             targetBreathingVolume = 1f;
         }
-        // Trigger fade out at 80%
         else if (isBreathing && staminaPercent >= 80f)
         {
             isBreathing = false;
@@ -139,12 +137,22 @@ public class FPSMovement : MonoBehaviour
         else if (Input.GetKey(KeyCode.LeftControl))
             speed = crouchSpeed;
 
-        Vector3 moveDirection = rb.rotation * new Vector3(moveInput.x, 0, moveInput.z);
+        
+       
+        float camYAngle = playerCamera.eulerAngles.y;
+
+       
+       
+        Vector3 absoluteForward = Quaternion.Euler(0, camYAngle, 0) * Vector3.forward;
+        Vector3 absoluteRight = Quaternion.Euler(0, camYAngle, 0) * Vector3.right;
+
+       
+        Vector3 moveDirection = (absoluteRight * moveInput.x + absoluteForward * moveInput.z);
 
         if (moveDirection.magnitude > 1) moveDirection.Normalize();
 
         Vector3 targetVel = moveDirection * speed;
-        targetVel.y = rb.linearVelocity.y;
+        targetVel.y = rb.linearVelocity.y; 
 
         rb.linearVelocity = targetVel;
     }

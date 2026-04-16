@@ -5,8 +5,10 @@ public class BloodSplatManager : MonoBehaviour
 {
     [Header("Settings")]
     public GameObject splatPrefab;
+    public GameObject splashEffectPrefab; // NEW: The explosion of tiny droplets
+
     public float minScale = 0.05f;      // Start much smaller
-    public float maxScale = 0.4f;      // Don't let them fill the hallway
+    public float maxScale = 0.4f;       // Don't let them fill the hallway
     public float growthAmount = 0.01f; // VERY small growth per hit
     public int maxSplats = 1000;
 
@@ -32,6 +34,14 @@ public class BloodSplatManager : MonoBehaviour
         {
             Vector3 pos = collisionEvents[i].intersection;
             Vector3 normal = collisionEvents[i].normal;
+
+            // --- NEW: SPAWN THE 3D SPLASH EFFECT ---
+            if (splashEffectPrefab != null)
+            {
+                // Spawn a tiny burst of particles and destroy it after 1 second so it doesn't lag the game
+                GameObject splashBurst = Instantiate(splashEffectPrefab, pos, Quaternion.LookRotation(normal));
+                Destroy(splashBurst, 1f);
+            }
 
             Collider[] existingSplats = Physics.OverlapSphere(pos, detectionRadius, bloodLayer);
 

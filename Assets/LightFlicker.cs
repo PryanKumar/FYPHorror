@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.Collections;
 
 [RequireComponent(typeof(Light))]
 public class LightFlicker : MonoBehaviour
@@ -8,70 +7,60 @@ public class LightFlicker : MonoBehaviour
     private AudioSource buzzSound;
 
     [Header("Intensity Settings")]
-    public float maxIntensity = 7500.0f;
-    public float minIntensity = 0f;
+    public float maxIntensity = 800.0f;
+    [Tooltip("Keep this above 0 so the room is never completely pitch black!")]
+    public float minIntensity = 50.0f;
 
-    [Header("On/Off Timing")]
-    [Tooltip("How long the light stays ON during a flicker.")]
-    public float minOnTime = 0.05f;
-    public float maxOnTime = 0.2f;
-
-    [Tooltip("How long the light stays OFF during a flicker.")]
-    public float minOffTime = 0.05f;
-    public float maxOffTime = 0.2f;
-
-    [Header("The Pause (Randomized per Light)")]
-    [Tooltip("The delay before the next On/Off cycle begins.")]
-    public float minPauseTime = 1.0f;
-    public float maxPauseTime = 5.0f;
+    [Header("Breathing Settings")]
+    [Tooltip("How fast the light breathes in and out.")]
+    public float breatheSpeed = 2f;
 
     [Header("Audio Settings")]
     public float maxVolume = 0.6f;
+    public float minVolume = 0.1f;
     public bool syncPitch = true;
+
+    private float randomOffset;
 
     void Start()
     {
         baseLight = GetComponent<Light>();
         buzzSound = GetComponent<AudioSource>();
 
-        // Start the infinite loop for this specific light
-        StartCoroutine(FlickerRoutine());
-    }
+        // Gives each light a random start point. 
+        // This ensures that if you have 5 lights in a hallway, they don't all breathe in perfect robotic unison.
+        randomOffset = Random.Range(0f, 100f);
 
-    IEnumerator FlickerRoutine()
-    {
-        while (true)
+        // Make sure the audio is playing and looping
+        if (buzzSound != null && !buzzSound.isPlaying)
         {
-            // 1. LIGHT ON
-            float onTime = Random.Range(minOnTime, maxOnTime);
-            SetLightState(maxIntensity, maxVolume, 1.2f);
-            yield return new WaitForSeconds(onTime);
-
-            // 2. LIGHT OFF
-            float offTime = Random.Range(minOffTime, maxOffTime);
-            SetLightState(minIntensity, 0.05f, 0.8f); // Faint buzz when off
-            yield return new WaitForSeconds(offTime);
-
-            // 3. THE PAUSE
-            // Randomized duration ensures multiple lights don't sync up
-            float pauseTime = Random.Range(minPauseTime, maxPauseTime);
-
-            // Decide if light stays ON or OFF during the long pause
-            // Usually, staying OFF is creepier for horror
-            SetLightState(minIntensity, 0f, 0.8f);
-
-            yield return new WaitForSeconds(pauseTime);
+            buzzSound.loop = true;
+            buzzSound.Play();
         }
     }
 
-    void SetLightState(float intensity, float volume, float pitch)
+    void Update()
     {
-        if (baseLight != null) baseLight.intensity = intensity;
+        // 1. Calculate the breathing curve (Mathf.Sin naturally goes smoothly up and down)
+        // Adding 1 and dividing by 2 turns the math into a clean percentage between 0.0 and 1.0
+        float breathingRatio = (Mathf.Sin((Time.time + randomOffset) * breatheSpeed) + 1f) / 2f;
 
+        // 2. Smoothly adjust the light intensity based on that curve
+        if (baseLight != null)
+        {
+            baseLight.intensity = Mathf.Lerp(minIntensity, maxIntensity, breathingRatio);
+        }
+
+        // 3. Smoothly adjust the sound to match the light getting brighter/dimmer
         if (buzzSound != null)
         {
-            buzzSound.volume = volume;
-            if (syncPitch) buzzSound.pitch = pitch;
+            buzzSound.volume = Mathf.Lerp(minVolume, maxVolume, breathingRatio);
+
+            if (syncPitch)
+            {
+                // Pitch gently drops when the light dims, and rises when it brightens
+                buzzSound.pitch = Mathf.Lerp(0.8f, 1.2f, breathingRatio);
+            }
         }
     }
 }

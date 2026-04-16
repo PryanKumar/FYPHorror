@@ -245,6 +245,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TriggerInteractable
   interactionUI: {fileID: 1070689503}
   promptMessage: Insert Key
+  missingKeyMessage: Key Required
+  needsKey: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -284,6 +286,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  useOnlyOnce: 0
 --- !u!1 &24708577
 GameObject:
   m_ObjectHideFlags: 0
@@ -1190,12 +1193,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f6b4e21efb0ab4449b8b152a7fdea43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 500
   maxIntensity: 4500
-  flickerRate: 0.1
-  darknessProbability: 10
+  minIntensity: 500
+  breatheSpeed: 2
   maxVolume: 1
-  syncPitchWithIntensity: 1
+  minVolume: 0.1
+  syncPitch: 1
 --- !u!114 &130568528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1791,6 +1794,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TriggerInteractable
   interactionUI: {fileID: 1070689503}
   promptMessage: Pick up note
+  missingKeyMessage: Key Required
+  needsKey: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -1806,6 +1811,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  useOnlyOnce: 0
 --- !u!64 &146125928
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1914,6 +1920,7 @@ MonoBehaviour:
   noteTitle: Entrance Note
   noteContent: Hi doctor,  you've missed out on an operation earlier. Please head
     to the Operation Theatre and finish the job!
+  noteSprite: {fileID: 0}
   playerInteract: {fileID: 1256508270}
 --- !u!1 &157207112
 GameObject:
@@ -4014,6 +4021,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TriggerInteractable
   interactionUI: {fileID: 1070689503}
   promptMessage: Restore Power
+  missingKeyMessage: Key Required
+  needsKey: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -4054,6 +4063,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  useOnlyOnce: 0
 --- !u!1 &341743863
 GameObject:
   m_ObjectHideFlags: 0
@@ -4183,12 +4193,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f6b4e21efb0ab4449b8b152a7fdea43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 500
   maxIntensity: 4500
-  flickerRate: 0.1
-  darknessProbability: 6
+  minIntensity: 500
+  breatheSpeed: 2
   maxVolume: 1
-  syncPitchWithIntensity: 1
+  minVolume: 0.1
+  syncPitch: 1
 --- !u!114 &341743866
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7262,9 +7272,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01e67fcebda20f844ab99bbc38d30005, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  doorTransform: {fileID: 599162103}
+  bigDoor: {fileID: 0}
+  smallDoor: {fileID: 0}
   cinematic: {fileID: 581321241}
-  closedYPos: 0.011
+  bigDoorOpenX: 10.6
+  bigDoorClosedX: 11.576
+  smallDoorOpenX: 10.53
+  smallDoorClosedX: 12.56
   slideSpeed: 2
 --- !u!114 &581321241
 MonoBehaviour:
@@ -12424,6 +12438,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   interactionUI: {fileID: 1070689503}
   promptMessage: Go to G floor
+  missingKeyMessage: Key Required
+  needsKey: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -12451,6 +12467,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  useOnlyOnce: 0
 --- !u!1 &970113136
 GameObject:
   m_ObjectHideFlags: 0
@@ -12508,6 +12525,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TriggerInteractable
   interactionUI: {fileID: 1070689503}
   promptMessage: Pick up note
+  missingKeyMessage: Key Required
+  needsKey: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -12523,6 +12542,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  useOnlyOnce: 0
 --- !u!64 &970113139
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -12631,6 +12651,7 @@ MonoBehaviour:
   noteTitle: Operation Theatre Locked
   noteContent: Sorry doctor but something is here, we had to lock the operation theatre
     without any choice. The key is in the Doctor's room.
+  noteSprite: {fileID: 0}
   playerInteract: {fileID: 1256508270}
 --- !u!1 &976188180
 GameObject:
@@ -13931,12 +13952,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f6b4e21efb0ab4449b8b152a7fdea43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 500
   maxIntensity: 4500
-  flickerRate: 0.1
-  darknessProbability: 6
+  minIntensity: 500
+  breatheSpeed: 2
   maxVolume: 0.6
-  syncPitchWithIntensity: 1
+  minVolume: 0.1
+  syncPitch: 1
 --- !u!1 &1085487815
 GameObject:
   m_ObjectHideFlags: 0
@@ -14064,6 +14085,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TriggerInteractable
   interactionUI: {fileID: 1070689503}
   promptMessage: Pick Up Fuse
+  missingKeyMessage: Key Required
+  needsKey: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -14079,6 +14102,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
+  useOnlyOnce: 0
 --- !u!114 &1085487821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14093,7 +14117,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   itemName: Fuse
   itemDescription: Use this to turn on the Power Box
+  inspectionPrefab: {fileID: 0}
   inspectionRotationOffset: {x: 0, y: 0, z: 0}
+  noteUIBackground: {fileID: 0}
 --- !u!1 &1096176471
 GameObject:
   m_ObjectHideFlags: 0
@@ -14369,6 +14395,7 @@ MonoBehaviour:
   currentStage: 0
   menuPanel: {fileID: 1695719453}
   playerInteract: {fileID: 1256508270}
+  activeKeypad: {fileID: 0}
   loop1Container: {fileID: 1672110907}
   primaryObjectiveText: {fileID: 372939911}
   keyText: {fileID: 1891860712}
@@ -14378,6 +14405,7 @@ MonoBehaviour:
   notesInventoryPanel: {fileID: 556056870}
   noteButtonPrefab: {fileID: 2229568264605491053, guid: 615fd5f3534e2814083acfe4a000e9ae, type: 3}
   buttonContainer: {fileID: 1673438314}
+  collectedNoteSprites: []
 --- !u!4 &1136582429
 Transform:
   m_ObjectHideFlags: 0
@@ -14878,6 +14906,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TriggerInteractable
   interactionUI: {fileID: 1070689503}
   promptMessage: Pick Up Key
+  missingKeyMessage: Key Required
+  needsKey: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -14893,6 +14923,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  useOnlyOnce: 0
 --- !u!114 &1203789718
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14907,7 +14938,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InspectableItem
   itemName: Yellow Key
   itemDescription: Use this to unlock the Operation Theatre
+  inspectionPrefab: {fileID: 0}
   inspectionRotationOffset: {x: 0, y: 0, z: 0}
+  noteUIBackground: {fileID: 0}
 --- !u!1 &1236622893
 GameObject:
   m_ObjectHideFlags: 0
@@ -15183,6 +15216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b56dfc943fced341a26dda0e9e86505, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  playerCamera: {fileID: 0}
   walkSpeed: 8
   sprintSpeed: 15
   crouchSpeed: 2
@@ -15190,6 +15224,8 @@ MonoBehaviour:
   currentStamina: 0
   staminaDrain: 25
   staminaRegen: 15
+  breathingSource: {fileID: 0}
+  breathingFadeSpeed: 2
   jumpForce: 5
   gravityMultiplier: 3.5
   groundCheck: {fileID: 1133567804}
@@ -15337,13 +15373,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3cd303df6ca0d3a43b2fe459ad864fd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  interactionRadius: 3
+  interactionDistance: 3
   interactKey: 101
   interactLayer:
     serializedVersion: 2
     m_Bits: 4294967295
+  shockScreamSource: {fileID: 0}
+  shockDuration: 1.5
+  shockIntensity: 0.15
   hasFuse: 0
   hasKey: 0
+  hasClockHand: 0
   isPowerOn: 0
   footstepSource: {fileID: 1684726697}
   walkClip: {fileID: 8300000, guid: 028a00fea6bcab04fb3f15cc83d0afc9, type: 3}
@@ -15354,20 +15394,30 @@ MonoBehaviour:
   notePickupSound: {fileID: 8300000, guid: 6a79d89075978184ca11d32be8164ff5, type: 3}
   itemPickupSound: {fileID: 8300000, guid: 4caae237eaf445241bc704c0bab100ee, type: 3}
   notePanel: {fileID: 107739774}
+  noteBackgroundUI: {fileID: 0}
   noteUIText: {fileID: 906713347}
   collectedNoteTitles: []
   collectedNoteContents: []
   itemInspector: {fileID: 1256508271}
+  isInspecting: 0
   actualDoor: {fileID: 285105043}
-  openZPosition: -185.22
+  openXPosition: 572.351
   slideSpeed: 2
-  cornerGhost: {fileID: 1543913661}
+  hallwayGhost: {fileID: 0}
+  ghostWalkAudio: {fileID: 0}
+  ghostTravelTime: 3
+  runningGhost: {fileID: 0}
+  ghostRunAudio: {fileID: 0}
+  ghostRunDuration: 1.5
   faceJumpscareGhost: {fileID: 1645940972}
+  jumpscareScream: {fileID: 0}
+  blackScreenOverlay: {fileID: 2009707941}
+  loop2SceneName: Loop2
   movementScript: {fileID: 1256508264}
   cameraLookScript: {fileID: 1823688469}
   yellowKeyObject: {fileID: 1203789712}
   powerLight: {fileID: 1426565856}
-  blackScreenOverlay: {fileID: 2009707941}
+  menuManager: {fileID: 1136582428}
   playerFlashlight: {fileID: 875366952}
   flashlightClickSound: {fileID: 0}
   tutorialPanel: {fileID: 906879772}
@@ -15375,8 +15425,8 @@ MonoBehaviour:
   tutorialDescription: {fileID: 1609119005}
   mouseMoveIcon: {fileID: 21300000, guid: 7668960e3927941419882fd43012af8b, type: 3}
   wasdIcon: {fileID: 21300000, guid: ca9a893816ddaf74eaf06b8b66506765, type: 3}
+  tabMenuIcon: {fileID: 0}
   rightClickIcon: {fileID: 21300000, guid: 21f23790eb0bc1b4389ca4033af5ef55, type: 3}
-  menuManager: {fileID: 1136582428}
 --- !u!114 &1256508271
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16012,12 +16062,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f6b4e21efb0ab4449b8b152a7fdea43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 500
   maxIntensity: 4500
-  flickerRate: 0.1
-  darknessProbability: 6
+  minIntensity: 500
+  breatheSpeed: 2
   maxVolume: 1
-  syncPitchWithIntensity: 1
+  minVolume: 0.1
+  syncPitch: 1
 --- !u!114 &1298699804
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -17759,12 +17809,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f6b4e21efb0ab4449b8b152a7fdea43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 500
   maxIntensity: 4500
-  flickerRate: 0.1
-  darknessProbability: 6
+  minIntensity: 500
+  breatheSpeed: 2
   maxVolume: 1
-  syncPitchWithIntensity: 1
+  minVolume: 0.1
+  syncPitch: 1
 --- !u!114 &1502682598
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18577,11 +18627,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5bba62d8b65dae44898012275d24ba9e, type: 3}
---- !u!1 &1543913661 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6568706143511174688, guid: 5bba62d8b65dae44898012275d24ba9e, type: 3}
-  m_PrefabInstance: {fileID: 1543913660}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1553617237
 GameObject:
   m_ObjectHideFlags: 0
@@ -19709,12 +19754,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f6b4e21efb0ab4449b8b152a7fdea43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 500
   maxIntensity: 4500
-  flickerRate: 0.1
-  darknessProbability: 6
+  minIntensity: 500
+  breatheSpeed: 2
   maxVolume: 1
-  syncPitchWithIntensity: 1
+  minVolume: 0.1
+  syncPitch: 1
 --- !u!114 &1628158766
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22846,12 +22891,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f6b4e21efb0ab4449b8b152a7fdea43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LightFlicker
-  minIntensity: 500
   maxIntensity: 7500
-  flickerRate: 0.05
-  darknessProbability: 6
+  minIntensity: 500
+  breatheSpeed: 2
   maxVolume: 1
-  syncPitchWithIntensity: 1
+  minVolume: 0.1
+  syncPitch: 1
 --- !u!114 &1871285361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25817,6 +25862,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::TriggerInteractable
   interactionUI: {fileID: 1070689503}
   promptMessage: Pick up Flashlight
+  missingKeyMessage: Key Required
+  needsKey: 0
   onInteract:
     m_PersistentCalls:
       m_Calls:
@@ -25832,6 +25879,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+  useOnlyOnce: 0
 --- !u!65 &3797467270772928120
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -25867,7 +25915,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InspectableItem
   itemName: Flashlight
   itemDescription: Use to see through dark areas
+  inspectionPrefab: {fileID: 0}
   inspectionRotationOffset: {x: 0, y: 0, z: 0}
+  noteUIBackground: {fileID: 0}
 --- !u!1001 &5482707257993339494
 PrefabInstance:
   m_ObjectHideFlags: 0

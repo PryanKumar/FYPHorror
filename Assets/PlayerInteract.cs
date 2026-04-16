@@ -25,6 +25,9 @@ public class PlayerInteract : MonoBehaviour
     public bool hasClockHand = false;
     public bool isPowerOn = false;
 
+    [Header("Doll Setup")]
+    public DollStalker creepyDoll;
+
     [Header("Movement SFX")]
     public AudioSource footstepSource;
     public AudioClip walkClip;
@@ -352,7 +355,15 @@ public class PlayerInteract : MonoBehaviour
 
     public void CloseNote() { if (!isReadingNote) return; isReadingNote = false; if (notePanel != null) notePanel.SetActive(false); ToggleControls(true); Cursor.lockState = CursorLockMode.Locked; Cursor.visible = false; }
 
-    public void PickUpFuse() { hasFuse = true; PlayItemPickupSound(); if (menuManager != null) menuManager.UpdateFuseUI(); }
+    public void PickUpFuse()
+    {
+        hasFuse = true;
+        PlayItemPickupSound();
+        if (menuManager != null) menuManager.UpdateFuseUI();
+
+        // WAKE UP THE DOLL!
+        if (creepyDoll != null) creepyDoll.ActivateStalker();
+    }
     public void PickUpKey() { hasKey = true; PlayItemPickupSound(); if (menuManager != null) menuManager.UpdateKeyUI(); }
     public void PickUpClockHand() { hasClockHand = true; PlayItemPickupSound(); }
 
@@ -383,7 +394,30 @@ public class PlayerInteract : MonoBehaviour
         if (flashlightClickSound != null) flashlightClickSound.Play();
     }
 
-    public void ActivatePower() { hasFuse = false; isPowerOn = true; if (menuManager != null) menuManager.UpdatePowerUI(); if (powerLight != null) { powerLight.intensity = 10f; powerLight.color = Color.green; } if (yellowKeyObject != null) yellowKeyObject.SetActive(true); PlayItemPickupSound(); }
+    public void ActivatePower()
+    {
+        // THE FIX: Act as a bouncer. If we don't have the fuse, STOP immediately.
+        if (!hasFuse)
+        {
+            Debug.Log("Player tried to turn on power without the fuse!");
+            return;
+        }
+
+        hasFuse = false;
+        isPowerOn = true;
+
+        if (menuManager != null) menuManager.UpdatePowerUI();
+
+        if (powerLight != null)
+        {
+            powerLight.intensity = 10f;
+            powerLight.color = Color.green;
+        }
+
+        if (yellowKeyObject != null) yellowKeyObject.SetActive(true);
+
+        PlayItemPickupSound();
+    }
 
     IEnumerator SlideDoorOpen(Transform doorTransform)
     {
