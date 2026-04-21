@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-using System.Collections; // Needed for fading UI
+using System.Collections;
 
 public class DollStalker : MonoBehaviour
 {
@@ -14,6 +14,11 @@ public class DollStalker : MonoBehaviour
     public float moveSpeed = 4f;
     public float killDistance = 1.5f;
     public LayerMask obstacleMask;
+
+    [Header("Jumpscare Polish")]
+    public Animator dollAnimator;
+    public Transform jumpscarePoint; // The empty object under your camera
+    public float screamDuration = 2.0f; // How long the animation takes before UI shows up
 
     private NavMeshAgent agent;
     private bool isActive = false;
@@ -89,22 +94,45 @@ public class DollStalker : MonoBehaviour
 
     void TriggerGameOver()
     {
-        // 1. Stop the doll
+        // Start the cinematic sequence instead of instantly dying
+        StartCoroutine(JumpscareSequence());
+    }
+
+    IEnumerator JumpscareSequence()
+    {
+        // 1. Stop the doll's AI completely
         isActive = false;
         agent.isStopped = true;
+        agent.enabled = false; // Turn off NavMesh so it can teleport off the ground
 
-        // 2. Free the mouse so they can click buttons
-        Cursor.lockState = CursorLockMode.None;
-        Cursor.visible = true;
-
-        // 3. FREEZE THE PLAYER (Stops them from walking around while dead)
+        // 2. Freeze the player
         PlayerInteract interactScript = player.GetComponent<PlayerInteract>();
         if (interactScript != null)
         {
             interactScript.ToggleControls(false);
         }
 
-        // 4. SHOW AND FADE IN THE DEATH SCREEN
+        // 3. Teleport the doll directly to the camera anchor
+        if (jumpscarePoint != null)
+        {
+            transform.position = jumpscarePoint.position;
+            transform.rotation = jumpscarePoint.rotation;
+        }
+
+        // 4. Play the Scream Animation
+        if (dollAnimator != null)
+        {
+            dollAnimator.SetTrigger("Scream");
+        }
+
+        // 5. WAIT for the animation to finish (Adjust screamDuration in Inspector)
+        yield return new WaitForSeconds(screamDuration);
+
+        // 6. Free the mouse so they can click restart
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // 7. Show and fade in the Game Over UI
         if (gameOverUI != null)
         {
             gameOverUI.SetActive(true);
@@ -117,16 +145,14 @@ public class DollStalker : MonoBehaviour
         }
     }
 
-    // Smoothly makes the death screen visible and clickable
     IEnumerator FadeInDeathScreen(CanvasGroup cg)
     {
         while (cg.alpha < 1f)
         {
-            cg.alpha += Time.deltaTime * 1.5f; // Adjust 1.5f to make fade faster/slower
+            cg.alpha += Time.deltaTime * 1.5f;
             yield return null;
         }
 
-        // Ensure the buttons can be clicked once fully visible
         cg.interactable = true;
         cg.blocksRaycasts = true;
     }

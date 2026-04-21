@@ -19,6 +19,14 @@ public class MenuManager : MonoBehaviour
         Loop2_Generator
     }
 
+    // --- CHECKPOINT SYSTEM ---
+    // Static variables survive scene reloads!
+    public static bool loadFromCheckpoint = false;
+
+    [Header("Checkpoint References")]
+    public Transform playerTransform;
+    public Transform level4SpawnPoint; // Drag an empty object inside the Level 4 Lift here!
+
     [Header("Current Progress")]
     public ObjectiveStage currentStage = ObjectiveStage.EnterLift;
 
@@ -42,7 +50,6 @@ public class MenuManager : MonoBehaviour
     public GameObject noteButtonPrefab;
     public Transform buttonContainer;
 
-    // NEW: We need to store the sprites here too so the inventory can display them
     public List<Sprite> collectedNoteSprites = new List<Sprite>();
 
     private bool isPaused = false;
@@ -56,6 +63,13 @@ public class MenuManager : MonoBehaviour
             playerInteract.hasFuse = false;
             playerInteract.hasKey = false;
             playerInteract.isPowerOn = false;
+        }
+
+        // --- CHECKPOINT LOGIC ---
+        // If the scene just loaded, and we clicked "Restart" last time...
+        if (loadFromCheckpoint)
+        {
+            HandleCheckpointSpawn();
         }
     }
 
@@ -75,6 +89,46 @@ public class MenuManager : MonoBehaviour
             else PauseGame();
         }
     }
+
+    // --- NEW: RESTART & CHECKPOINT LOGIC ---
+
+    public void RestartFromCheckpoint()
+    {
+        // Tell the game to use the checkpoint when it reloads
+        loadFromCheckpoint = true;
+
+        // Reset time and mouse before reloading
+        Time.timeScale = 1f;
+
+        // Reload the current scene
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    private void HandleCheckpointSpawn()
+    {
+        Debug.Log("Spawning player at Level 4 Checkpoint!");
+
+        // 1. Teleport Player
+        if (playerTransform != null && level4SpawnPoint != null)
+        {
+            // Turn off CharacterController temporarily to allow teleporting
+            CharacterController cc = playerTransform.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+
+            playerTransform.position = level4SpawnPoint.position;
+            playerTransform.rotation = level4SpawnPoint.rotation;
+
+            if (cc != null) cc.enabled = true;
+        }
+
+        // 2. Set the exact Objective Stage for Level 4
+        currentStage = ObjectiveStage.FindTheatre;
+
+        // 3. (Optional) Turn off the static flag so a normal death later doesn't break things
+        loadFromCheckpoint = false;
+    }
+
+    // --- EXISTING MENU LOGIC ---
 
     public void PauseGame()
     {
@@ -140,15 +194,11 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-    // FIXED: Now passes both the Content and the Sprite to PlayerInteract
     void ShowNoteFromInventory(int index)
     {
         if (notesInventoryPanel != null) notesInventoryPanel.SetActive(false);
-
-        // We get the content from playerInteract and the Sprite from our local list
         string content = playerInteract.collectedNoteContents[index];
         Sprite noteSprite = (index < collectedNoteSprites.Count) ? collectedNoteSprites[index] : null;
-
         playerInteract.ShowNote(content, noteSprite);
     }
 
