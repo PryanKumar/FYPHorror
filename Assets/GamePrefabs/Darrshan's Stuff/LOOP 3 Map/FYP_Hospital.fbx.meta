@@ -1,0 +1,260 @@
+fileFormatVersion: 2
+guid: 55f5ccd6eab15dc438e8c5bad1e72bf6
+ModelImporter:
+  serializedVersion: 24200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 2  Panal Plaster
+    second: {fileID: 2100000, guid: 31db71c1f44ecde4d99f13fdfc7879d3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 2 Panel Plaster Wall BROWN
+    second: {fileID: 2100000, guid: a089e153693021948a7d870caa479767, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: 2 Panel Plaster Wall GREEN
+    second: {fileID: 2100000, guid: bf82aa71945632848b0bd5c8f8b45031, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Baked Lift MAT
+    second: {fileID: 2100000, guid: dcaac368a66df18458adc131ed124230, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Blue Brick Wall
+    second: {fileID: 2100000, guid: 72cf8be7230a33f418c005aae6283117, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Computer Room Floor
+    second: {fileID: 2100000, guid: 23f772abc837d7545ba9c23e09db5281, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Door Frame
+    second: {fileID: 2100000, guid: 19e1a653b39cbf346b796efd30a122db, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Door Frame BAKED
+    second: {fileID: 2100000, guid: eb6c9e6d049163641a539cc46148215d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Door Knob BAKED
+    second: {fileID: 2100000, guid: 27562f2a5de54f64daca7d996dfe17f9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Double Door BAKED
+    second: {fileID: 2100000, guid: a01d06181cd4e0b4cbbda7fd94fd3475, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Garden Floor
+    second: {fileID: 2100000, guid: f50431f9e534b5344a1a4cbcf11eba9d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Garden Wall
+    second: {fileID: 2100000, guid: 3b09196e67da54b4f9d35dde73e6eda6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Large Tile Floor
+    second: {fileID: 2100000, guid: fad54c1ad2e7337439d25d3ed5b68d67, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MED 2 Panel Wall
+    second: {fileID: 2100000, guid: 8f879d52f1019d74e80de3d03f59887c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MED_Terrazzo_Rubber_Floor
+    second: {fileID: 2100000, guid: f6f597d3e6c64f249b9203e2943e9e06, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: MED_Terrazzo_Rubber_Floor(Boarder)
+    second: {fileID: 2100000, guid: 946b4f59a7b1731419ed339e4633f0e6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Outside_Door_Bake
+    second: {fileID: 2100000, guid: 8a43c45f973f31840b4174adcd7bb2fd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Patient Door BAKED
+    second: {fileID: 2100000, guid: 1a29b443ca8ef2648b42780931168e77, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Patient Room Floor
+    second: {fileID: 2100000, guid: 16e1f058731fa774c86ebcc6ad3ebdef, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Plaster Ceiling WHITE.001
+    second: {fileID: 2100000, guid: 6501a89c193423c49a29c7a3e53039e6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Plaster Wall GREY
+    second: {fileID: 2100000, guid: 415f9f527a320c14684a7b5d13d22de3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Plaster Wall PEACH
+    second: {fileID: 2100000, guid: e4101c4204b8ec04ba0c49372964a59c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Plaster Wall WHITE
+    second: {fileID: 2100000, guid: 4214a3c2382f70242b30f173bf6b5f56, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Small Tiles Floor (Grey)
+    second: {fileID: 2100000, guid: 3a5352a20f6ffac42a1cd870dc5f6a0e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Small Tiles Floor (White)
+    second: {fileID: 2100000, guid: 15e597aecdd727946a72b1656ef1123c, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Tile Wall Bake
+    second: {fileID: 2100000, guid: cfb311452966637418c29a1356f7ddaf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Veined Grey Marble Floor
+    second: {fileID: 2100000, guid: 15841f1b2ddfe054ba69d590f4a66f8d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Veined Yellow Marble Floor
+    second: {fileID: 2100000, guid: b427062271853594fab7765c1bd5f8c6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Walls
+    second: {fileID: 2100000, guid: 80912cf9e96920f40b8899f58326f667, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Wooden Wall
+    second: {fileID: 2100000, guid: 7973652c8ba15dd428eb00ae125424ef, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
