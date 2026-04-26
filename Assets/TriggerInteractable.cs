@@ -4,8 +4,9 @@ using TMPro;
 public class TriggerInteractable : MonoBehaviour
 {
     [Header("UI Settings")]
+    public GameObject floatingCanvas;
     public TextMeshProUGUI interactionUI;
-    public string promptMessage = "Interact";
+    public string promptMessage = "E";
     public string missingKeyMessage = "Key Required";
 
     [Header("Requirements")]
@@ -19,6 +20,12 @@ public class TriggerInteractable : MonoBehaviour
     private bool hasBeenUsed = false;
     private bool playerIsNear = false;
     private PlayerInteract playerScript;
+
+    // NEW: Forces the UI to be invisible the exact second the game starts!
+    void Start()
+    {
+        HideUI();
+    }
 
     void Update()
     {
@@ -39,8 +46,7 @@ public class TriggerInteractable : MonoBehaviour
     {
         if (useOnlyOnce && hasBeenUsed) return;
 
-        // FIX: Hide UI IMMEDIATELY before firing events
-        // This prevents the UI from getting stuck if the object is destroyed
+        // Hide UI IMMEDIATELY before firing events
         HideUI();
 
         if (onInteract != null)
@@ -52,7 +58,6 @@ public class TriggerInteractable : MonoBehaviour
         {
             hasBeenUsed = true;
 
-            // Disable physics so OnTriggerExit doesn't get confused
             Collider col = GetComponent<Collider>();
             if (col != null) col.enabled = false;
             this.enabled = false;
@@ -70,9 +75,14 @@ public class TriggerInteractable : MonoBehaviour
 
             if (interactionUI != null)
             {
-                interactionUI.text = "Press [E] to " + promptMessage;
-                interactionUI.gameObject.SetActive(true);
+                interactionUI.text = promptMessage;
+
+                // Fallback for old items that don't have a floating canvas yet
+                if (floatingCanvas == null) interactionUI.gameObject.SetActive(true);
             }
+
+            // Turn on the entire Canvas group when you get close
+            if (floatingCanvas != null) floatingCanvas.SetActive(true);
         }
     }
 
@@ -80,20 +90,33 @@ public class TriggerInteractable : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            // Turns it off when you walk away
             HideUI();
         }
     }
 
-    // This ensures that if the object is destroyed/disabled, the UI goes away
     private void OnDisable()
     {
-        if (interactionUI != null) interactionUI.gameObject.SetActive(false);
+        if (floatingCanvas != null)
+        {
+            floatingCanvas.SetActive(false);
+        }
+        else if (interactionUI != null)
+        {
+            interactionUI.gameObject.SetActive(false);
+        }
     }
 
     private void HideUI()
     {
         playerIsNear = false;
-        if (interactionUI != null)
+
+        // Safely turns off the whole visual group
+        if (floatingCanvas != null)
+        {
+            floatingCanvas.SetActive(false);
+        }
+        else if (interactionUI != null)
         {
             interactionUI.gameObject.SetActive(false);
         }

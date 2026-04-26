@@ -14,18 +14,22 @@ public class SurgeryProgressManager : MonoBehaviour
     public Slider progressSlider;
 
     [Header("Hand Tools (Attached to Camera)")]
-    // Slot 0 = Tool 1, Slot 1 = Tool 2, Slot 2 = Tool 3
     public GameObject[] handTools;
 
     [Header("Phase Events")]
+    public UnityEvent onPhase1Start;    // Triggers the second they touch 'H'
     public UnityEvent onPhase1Complete;
     public UnityEvent onPhase2Complete;
     public UnityEvent onPhase3Complete;
 
+    [Header("Cinematic Connections")]
+    public Phase2DropManager dropManager; // NEW: Connects to our ceiling drop script!
+
     private bool canPerformSurgery = false;
     private float currentProgress = 0f;
+    private bool hasPhase1Started = false;
+    private bool hasCeilingDropTriggered = false; // NEW: Prevents the scare from firing twice!
 
-    // 0 = Cut, 1 = Open, 2 = Extract
     public int currentPhase = 0;
 
     void Start()
@@ -33,7 +37,6 @@ public class SurgeryProgressManager : MonoBehaviour
         if (progressBarUI != null) progressBarUI.SetActive(false);
         if (progressSlider != null) progressSlider.value = 0f;
 
-        // Ensure all hand tools are hidden at the start
         foreach (GameObject tool in handTools)
         {
             if (tool != null) tool.SetActive(false);
@@ -46,16 +49,26 @@ public class SurgeryProgressManager : MonoBehaviour
 
         if (Input.GetKey(surgeryKey))
         {
-            // 1. Fill the bar
-            currentProgress += progressSpeed * Time.deltaTime;
-
-            // 2. Show the correct tool in hand
-            if (currentPhase < handTools.Length && handTools[currentPhase] != null)
+            // Trigger the banging the very first time they hold H in Phase 0!
+            if (currentPhase == 0 && !hasPhase1Started)
             {
-                handTools[currentPhase].SetActive(true);
+                hasPhase1Started = true;
+                onPhase1Start.Invoke();
             }
 
-            // 3. Check if finished
+            currentProgress += progressSpeed * Time.deltaTime;
+
+            // NEW: Phase 2 Ceiling Drop Logic (Happens at 30 Progress)
+            // Note: currentPhase is 1 because Phase 1 was 0.
+            if (currentPhase == 1 && currentProgress >= 30f && !hasCeilingDropTriggered)
+            {
+                hasCeilingDropTriggered = true;
+                if (dropManager != null) dropManager.TriggerCeilingDrop();
+            }
+
+            if (currentPhase < handTools.Length && handTools[currentPhase] != null)
+                handTools[currentPhase].SetActive(true);
+
             if (currentProgress >= 100f)
             {
                 currentProgress = 100f;
@@ -64,20 +77,12 @@ public class SurgeryProgressManager : MonoBehaviour
         }
         else
         {
-            // 1. Drain the bar
-            if (currentProgress > 0f)
-            {
-                currentProgress -= cooldownSpeed * Time.deltaTime;
-            }
+            if (currentProgress > 0f) currentProgress -= cooldownSpeed * Time.deltaTime;
 
-            // 2. Hide the tool if they let go of 'H'
             if (currentPhase < handTools.Length && handTools[currentPhase] != null)
-            {
                 handTools[currentPhase].SetActive(false);
-            }
         }
 
-        // Update the UI
         if (progressSlider != null) progressSlider.value = currentProgress;
     }
 
@@ -97,11 +102,8 @@ public class SurgeryProgressManager : MonoBehaviour
             canPerformSurgery = false;
             if (progressBarUI != null) progressBarUI.SetActive(false);
 
-            // Failsafe: Hide tool if player walks away while holding H
             if (currentPhase < handTools.Length && handTools[currentPhase] != null)
-            {
                 handTools[currentPhase].SetActive(false);
-            }
         }
     }
 
@@ -111,33 +113,14 @@ public class SurgeryProgressManager : MonoBehaviour
         currentProgress = 0f;
         if (progressBarUI != null) progressBarUI.SetActive(false);
 
-        // Hide the tool for good
         if (currentPhase < handTools.Length && handTools[currentPhase] != null)
-        {
             handTools[currentPhase].SetActive(false);
-        }
 
-        // Trigger the scary events!
-        if (currentPhase == 0)
-        {
-            Debug.Log("PHASE 1 COMPLETE: Ghost is coming!");
-            onPhase1Complete.Invoke();
-        }
-        else if (currentPhase == 1)
-        {
-            Debug.Log("PHASE 2 COMPLETE: Ceiling drop!");
-            onPhase2Complete.Invoke();
-        }
-        else if (currentPhase == 2)
-        {
-            Debug.Log("PHASE 3 COMPLETE: Final Cutscene!");
-            onPhase3Complete.Invoke();
-        }
+        if (currentPhase == 0) onPhase1Complete.Invoke();
+        else if (currentPhase == 1) onPhase2Complete.Invoke();
+        else if (currentPhase == 2) onPhase3Complete.Invoke();
 
-        // Advance to the next phase internally
         currentPhase++;
-
-        // TURN OFF THE SURGERY ZONE. Player must pick up the next tool to turn it back on!
         gameObject.SetActive(false);
     }
 }
