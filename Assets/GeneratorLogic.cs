@@ -9,10 +9,9 @@ public class GeneratorLogic : MonoBehaviour
     public GameObject sprinklerParent;
     public AudioSource engineSound;
 
-    [Header("New Door Logic")]
-    public Transform doorTransform; // Drag StoreDoor_Parent here
-    public float openXPos = 572.332f;
-    public float slideSpeed = 2f;
+    [Header("Door Control")]
+    // THE FIX: We use the Animator now instead of the Transform!
+    public Animator otDoorAnimator;
 
     [Header("Cinematic Settings")]
     public GameObject mainFPSCamera;
@@ -50,38 +49,25 @@ public class GeneratorLogic : MonoBehaviour
 
         ToggleCinematicMode(false);
 
-        // --- NEW POSITION-BASED DOOR OPENING ---
-        if (doorTransform != null)
+        // --- THE FIX: Let the Master Prefab's Animator handle the opening! ---
+        if (otDoorAnimator != null)
         {
-            yield return StartCoroutine(SlideDoor(openXPos));
+            otDoorAnimator.SetBool("isOpen", true);
         }
 
-        // Cleanup interaction
+        // Cleanup interaction so the player can't keep pulling the lever
         TriggerInteractable trigger = GetComponent<TriggerInteractable>();
         if (trigger != null) trigger.enabled = false;
+
         Collider col = GetComponent<Collider>();
         if (col != null) col.enabled = false;
-    }
-
-    IEnumerator SlideDoor(float targetX)
-    {
-        Vector3 startPos = doorTransform.position;
-        Vector3 endPos = new Vector3(targetX, startPos.y, startPos.z);
-        float elapsed = 0;
-
-        while (elapsed < 1.0f)
-        {
-            doorTransform.position = Vector3.Lerp(startPos, endPos, elapsed);
-            elapsed += Time.deltaTime * slideSpeed;
-            yield return null;
-        }
-        doorTransform.position = endPos;
     }
 
     void ToggleCinematicMode(bool isCinematic)
     {
         if (cutsceneCamera != null) cutsceneCamera.SetActive(isCinematic);
         if (mainFPSCamera != null) mainFPSCamera.SetActive(!isCinematic);
+
         if (playerController != null)
         {
             var moveScript = playerController.GetComponentInChildren<MonoBehaviour>();

@@ -11,29 +11,20 @@ public partial class KeypadController : MonoBehaviour
     public Image screenBackground;
 
     [Header("Settings")]
-    public string correctCode = "0342"; //
-    public GameObject doorToOpen; // Drag 'StoreDoor_Parent' here
+    public string correctCode = "0342";
+
+    [Header("Door Control")]
+    // THE FIX: We use the Animator now instead of trying to force the math!
+    public Animator doorAnimator;
 
     private string currentInput = "";
     private bool isUnlocked = false;
 
     // --- PAUSE HANDLING HELPERS ---
-
-    public void HideKeypadForPause()
-    {
-        keypadUI.SetActive(false);
-    }
-
-    public void ShowKeypadAfterResume()
-    {
-        if (!isUnlocked)
-        {
-            keypadUI.SetActive(true);
-        }
-    }
+    public void HideKeypadForPause() { keypadUI.SetActive(false); }
+    public void ShowKeypadAfterResume() { if (!isUnlocked) keypadUI.SetActive(true); }
 
     // --- CORE LOGIC ---
-
     public void OpenKeypad()
     {
         if (isUnlocked) return;
@@ -42,12 +33,12 @@ public partial class KeypadController : MonoBehaviour
         currentInput = "";
         UpdateScreen("Enter Code", Color.red);
 
+        // FREEZE TIME
         Time.timeScale = 0f;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
 
-    // Linked to your number buttons 0-9
     public void NumberButton(string number)
     {
         if (currentInput.Length < 4)
@@ -87,40 +78,27 @@ public partial class KeypadController : MonoBehaviour
         // Wait while time is frozen so player can see "Unlocked"
         yield return new WaitForSecondsRealtime(1f);
 
-        // 1. TRIGGER DOOR ANIMATION & SCRIPT
-        if (doorToOpen != null)
-        {
-            // Trigger the Animator parameter 'isOpen'
-            Animator anim = doorToOpen.GetComponent<Animator>();
-            if (anim != null)
-            {
-                anim.SetBool("isOpen", true);
-            }
+        // 1. UNFREEZE TIME FIRST
+        CloseKeypad();
 
-            // Also call the Unlock function if the SlidingDoor script is used
-            SlidingDoor doorScript = doorToOpen.GetComponent<SlidingDoor>();
-            if (doorScript != null)
-            {
-                doorScript.UnlockDoor();
-            }
+        // 2. THE FIX: TELL THE ANIMATOR TO SWING IT OPEN
+        if (doorAnimator != null)
+        {
+            doorAnimator.SetBool("isOpen", true);
         }
 
-        // 2. DISABLING THE INTERACTION UI
+        // 3. DISABLING THE INTERACTION UI
         TriggerInteractable trigger = GetComponent<TriggerInteractable>();
         if (trigger == null) trigger = GetComponentInParent<TriggerInteractable>();
 
         if (trigger != null)
         {
-            if (trigger.interactionUI != null)
-            {
-                trigger.interactionUI.gameObject.SetActive(false);
-            }
+            if (trigger.floatingCanvas != null) trigger.floatingCanvas.SetActive(false);
+            if (trigger.interactionUI != null) trigger.interactionUI.gameObject.SetActive(false);
             trigger.enabled = false;
         }
 
-        CloseKeypad();
-
-        // 3. CLEANUP
+        // 4. CLEANUP
         gameObject.tag = "Untagged";
         this.enabled = false;
     }
@@ -134,7 +112,7 @@ public partial class KeypadController : MonoBehaviour
     public void CloseKeypad()
     {
         keypadUI.SetActive(false);
-        Time.timeScale = 1f;
+        Time.timeScale = 1f; // UNFREEZE TIME
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
     }

@@ -5,15 +5,14 @@ using System.Collections;
 public class LoopEndHandler : MonoBehaviour
 {
     [Header("References")]
-    public Transform doorTransform;    // StoreDoor_Parent
-    public GameObject endCutsceneCam; // The camera showing the door closing
+    // THE FIX: Use the Animator instead of the Transform
+    public Animator otDoorAnimator;
+    public GameObject endCutsceneCam;
     public GameObject mainFPSCamera;
     public GameObject playerController;
-    public CanvasGroup fadeCanvas;    // For the fade to black
+    public CanvasGroup fadeCanvas;
 
     [Header("Settings")]
-    public float closeXPos = 570.784f;
-    public float slideSpeed = 2f;
     public string nextLoopScene = "Loop3";
 
     private bool hasTriggered = false;
@@ -34,20 +33,14 @@ public class LoopEndHandler : MonoBehaviour
         if (mainFPSCamera != null) mainFPSCamera.SetActive(false);
         if (playerController != null) playerController.SetActive(false);
 
-        // 2. Close the door
-        Vector3 startPos = doorTransform.position;
-        Vector3 endPos = new Vector3(closeXPos, startPos.y, startPos.z);
-        float elapsed = 0;
-
-        while (elapsed < 1.0f)
+        // 2. SLAM THE DOOR SHUT using the Animator
+        if (otDoorAnimator != null)
         {
-            doorTransform.position = Vector3.Lerp(startPos, endPos, elapsed);
-            elapsed += Time.deltaTime * slideSpeed;
-            yield return null;
+            otDoorAnimator.SetBool("isOpen", false);
         }
-        doorTransform.position = endPos;
 
-        yield return new WaitForSeconds(1.5f); // Dramatic pause
+        // Dramatic pause to watch the door close
+        yield return new WaitForSeconds(1.5f);
 
         // 3. Fade to Black
         if (fadeCanvas != null)
@@ -60,6 +53,9 @@ public class LoopEndHandler : MonoBehaviour
                 yield return null;
             }
         }
+
+        // Add a tiny half-second pause in pure darkness before the scene swap for max creepiness
+        yield return new WaitForSeconds(0.5f);
 
         // 4. Load Next Loop
         SceneManager.LoadScene(nextLoopScene);

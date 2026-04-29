@@ -11,10 +11,10 @@ public class NurseAI : MonoBehaviour
     private Animator anim;
 
     [Header("Patrol Settings")]
-    public Transform[] hallwayWaypoints;   // NEW: Only points outside
-    public Transform[] otWaypoints;        // NEW: Only points inside the OT
+    public Transform[] hallwayWaypoints;
+    public Transform[] otWaypoints;
     public float walkSpeed = 2.0f;
-    public int remainingOTPatrols = 0;     // NEW: How many spots she must check before leaving
+    public int remainingOTPatrols = 0;
 
     [Header("Hunting Settings")]
     public float runSpeed = 5.0f;
@@ -33,13 +33,23 @@ public class NurseAI : MonoBehaviour
     public bool isScriptedEvent = false;
     private bool isKilling = false;
 
-    void Start()
+    // THE FIX: Grab components in Awake so she is ready before any external scripts give her orders!
+    void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         anim = GetComponent<Animator>();
+    }
 
-        // Default start: patrol the hallway
-        if (hallwayWaypoints.Length > 0)
+    void Start()
+    {
+        // THE FIX: Prioritize the OT instantly if she spawns with a quota
+        if (remainingOTPatrols > 0 && otWaypoints.Length > 0)
+        {
+            agent.speed = walkSpeed;
+            agent.SetDestination(otWaypoints[Random.Range(0, otWaypoints.Length)].position);
+            remainingOTPatrols--;
+        }
+        else if (hallwayWaypoints.Length > 0)
         {
             agent.speed = walkSpeed;
             agent.SetDestination(hallwayWaypoints[Random.Range(0, hallwayWaypoints.Length)].position);
@@ -95,13 +105,11 @@ public class NurseAI : MonoBehaviour
             }
         }
 
-        // If she loses sight of you
         if (isChasing && distanceToPlayer > sightDistance)
         {
             isChasing = false;
-            remainingOTPatrols = 0; // Cancel the OT search if she was chasing
+            remainingOTPatrols = 0;
 
-            // Go back to the hallway
             if (hallwayWaypoints.Length > 0)
             {
                 agent.SetDestination(hallwayWaypoints[Random.Range(0, hallwayWaypoints.Length)].position);
@@ -115,13 +123,11 @@ public class NurseAI : MonoBehaviour
 
         if (agent.remainingDistance < 0.5f && !agent.pathPending)
         {
-            // If she still has an OT quota, force her to pick an OT point!
             if (remainingOTPatrols > 0 && otWaypoints.Length > 0)
             {
                 agent.SetDestination(otWaypoints[Random.Range(0, otWaypoints.Length)].position);
-                remainingOTPatrols--; // Subtract 1 from the quota
+                remainingOTPatrols--;
             }
-            // Otherwise, she is free to roam the hallways
             else if (hallwayWaypoints.Length > 0)
             {
                 agent.SetDestination(hallwayWaypoints[Random.Range(0, hallwayWaypoints.Length)].position);
@@ -135,10 +141,18 @@ public class NurseAI : MonoBehaviour
         agent.SetDestination(player.position);
     }
 
-    // NEW PUBLIC METHOD: The Breach Manager will trigger this!
+    // THE FIX: Immediately override her path when the Breach script tells her to search the OT!
     public void StartOTSearch(int numberOfSweeps)
     {
         remainingOTPatrols = numberOfSweeps;
+
+        if (agent != null && agent.isActiveAndEnabled && otWaypoints.Length > 0)
+        {
+            agent.ResetPath(); // Stop heading outside immediately!
+            agent.speed = walkSpeed;
+            agent.SetDestination(otWaypoints[Random.Range(0, otWaypoints.Length)].position);
+            remainingOTPatrols--; // We just used one of the sweeps
+        }
     }
 
     void UpdateAnimations()

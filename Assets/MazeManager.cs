@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement; // Needed to restart the level
+using UnityEngine.SceneManagement;
 
 public class MazeManager : MonoBehaviour
 {
@@ -12,10 +12,14 @@ public class MazeManager : MonoBehaviour
 
     [Header("Endings & UI")]
     public Transform storeRoomTeleportPoint;
-    public CanvasGroup blackScreenFade; // Drag 'BlackFade' here
-    public CanvasGroup gameOverUI;      // Drag 'GameOverUI' here
-    public string mainMenuSceneName = "MainMenu"; // Make sure this exactly matches your menu scene name
+    public CanvasGroup blackScreenFade;
+    public CanvasGroup gameOverUI;
+    public string mainMenuSceneName = "MainMenu";
     public float fadeSpeed = 1f;
+
+    [Header("Player Freeze Logic")]
+    public MonoBehaviour playerMouseLookScript;
+    public MonoBehaviour playerMovementScript;
 
     [Header("Game Rules")]
     public int requiredCorrectToWin = 3;
@@ -29,6 +33,8 @@ public class MazeManager : MonoBehaviour
     private GameObject[] stagedRooms = new GameObject[2];
     private int lastSelectedDoorIndex = -1;
 
+    [HideInInspector] public MazeDoor lastUsedDoor;
+
     public void OnDoorSelected(int doorIndex, bool isCorrectPath)
     {
         if (doorIndex >= stagedRooms.Length || stagedRooms[doorIndex] != null) return;
@@ -38,13 +44,11 @@ public class MazeManager : MonoBehaviour
         if (isCorrectPath)
         {
             correctChoices++;
-            Debug.Log("Correct choice! Sequence: " + correctChoices + "/" + requiredCorrectToWin);
         }
         else
         {
             correctChoices = 0;
             wrongChoices++;
-            Debug.Log("Wrong choice! Mistakes: " + wrongChoices + "/" + maxWrongBeforeFail);
         }
 
         DetermineNextRoom(doorIndex);
@@ -66,15 +70,7 @@ public class MazeManager : MonoBehaviour
             wrongChoices = 0;
             correctChoices = 0;
 
-            if (loopFails == 1)
-            {
-                selectedPrefab = operatingTheatrePrefab;
-            }
-            else if (loopFails >= 2)
-            {
-                selectedPrefab = operatingTheatrePrefab;
-                StartCoroutine(GameOverSequence()); // Triggers the Death Screen
-            }
+            selectedPrefab = operatingTheatrePrefab;
         }
         else
         {
@@ -107,10 +103,17 @@ public class MazeManager : MonoBehaviour
         if (newRoomObj.name.Contains(operatingTheatrePrefab.name))
         {
             Light otLight = newRoomObj.GetComponentInChildren<Light>();
-            if (otLight != null)
+            MannequinScareLogic scareLogic = newRoomObj.GetComponent<MannequinScareLogic>();
+
+            if (loopFails == 1)
             {
-                if (loopFails == 1) otLight.intensity = 150f;
-                else if (loopFails >= 2) otLight.intensity = 0f;
+                if (otLight != null) otLight.intensity = 150f;
+                if (scareLogic != null) scareLogic.SetPassiveMode();
+            }
+            else if (loopFails >= 2)
+            {
+                if (otLight != null) otLight.intensity = 0f;
+                if (scareLogic != null) scareLogic.PrepareJumpscare();
             }
         }
     }
@@ -119,24 +122,81 @@ public class MazeManager : MonoBehaviour
     {
         if (currentRoom != enteredRoom)
         {
-            if (lastSelectedDoorIndex != -1)
+            if (lastUsedDoor != null)
             {
-                MazeDoor doorToSlam = currentRoom.exitAnchors[lastSelectedDoorIndex].GetComponentInChildren<MazeDoor>();
-                if (doorToSlam != null) doorToSlam.CloseDoor();
+                lastUsedDoor.CloseDoor();
+                lastUsedDoor.transform.SetParent(enteredRoom.transform, true);
             }
 
-            if (currentRoom.gameObject.name != operatingTheatrePrefab.name && currentRoom.gameObject.name.Contains("(Clone)"))
+            if (loopFails >= 2 && enteredRoom.gameObject.name.Contains(operatingTheatrePrefab.name))
             {
-                Destroy(currentRoom.gameObject, 1f);
+                MannequinScareLogic scareLogic = enteredRoom.GetComponent<MannequinScareLogic>();
+                StartCoroutine(GameOverSequence(scareLogic));
+            }
+
+            if (currentRoom != null && currentRoom.gameObject.name != operatingTheatrePrefab.name && currentRoom.gameObject.name.Contains("(Clone)"))
+            {
+                Destroy(currentRoom.gameObject, 1.5f);
             }
 
             currentRoom = enteredRoom;
             System.Array.Clear(stagedRooms, 0, stagedRooms.Length);
             lastSelectedDoorIndex = -1;
+            lastUsedDoor = null;
         }
     }
 
     // --- CINEMATICS & ENDINGS ---
+
+    private IEnumerator GameOverSequence(MannequinScareLogic scareLogic)
+    {
+        Debug.Log("TRIGGERED: Player stepped in the trap! Freezing and Screaming!");
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null)
+        {
+            CharacterController cc = player.GetComponent<CharacterController>();
+            if (cc != null) cc.enabled = false;
+
+            Rigidbody rb = player.GetComponent<Rigidbody>();
+            if (rb != null) { rb.isKinematic = true; rb.linearVelocity = Vector3.zero; }
+
+            if (playerMovementScript != null) playerMovementScript.enabled = false;
+            if (playerMouseLookScript != null) playerMouseLookScript.enabled = false;
+        }
+
+        // THE UPGRADE: We pass the player's transform to the mannequin!
+        if (scareLogic != null && player != null)
+        {
+            scareLogic.ExecuteJumpscare(player.transform);
+
+            yield return new WaitForSeconds(scareLogic.screamAnimationLength);
+        }
+
+        if (blackScreenFade != null)
+        {
+            while (blackScreenFade.alpha < 1f)
+            {
+                blackScreenFade.alpha += Time.deltaTime * fadeSpeed;
+                yield return null;
+            }
+        }
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        if (gameOverUI != null)
+        {
+            while (gameOverUI.alpha < 1f)
+            {
+                gameOverUI.alpha += Time.deltaTime * fadeSpeed;
+                yield return null;
+            }
+            gameOverUI.blocksRaycasts = true;
+            gameOverUI.interactable = true;
+        }
+    }
 
     private IEnumerator CinematicTeleport()
     {
@@ -150,7 +210,6 @@ public class MazeManager : MonoBehaviour
         CharacterController cc = null;
         Rigidbody rb = null;
 
-        // 1. FREEZE THE PLAYER COMPLETELY
         if (player != null)
         {
             cc = player.GetComponent<CharacterController>();
@@ -158,9 +217,11 @@ public class MazeManager : MonoBehaviour
 
             if (cc != null) cc.enabled = false;
             if (rb != null) { rb.isKinematic = true; rb.linearVelocity = Vector3.zero; }
+
+            if (playerMovementScript != null) playerMovementScript.enabled = false;
+            if (playerMouseLookScript != null) playerMouseLookScript.enabled = false;
         }
 
-        // 2. FADE TO BLACK
         if (blackScreenFade != null)
         {
             while (blackScreenFade.alpha < 1f)
@@ -172,17 +233,13 @@ public class MazeManager : MonoBehaviour
 
         yield return new WaitForSeconds(1.5f);
 
-        // 3. THE BULLETPROOF TELEPORT
         if (player != null && storeRoomTeleportPoint != null)
         {
             player.transform.position = storeRoomTeleportPoint.position;
             player.transform.rotation = storeRoomTeleportPoint.rotation;
-
-            // Force Unity's physics engine to accept the new location
             Physics.SyncTransforms();
         }
 
-        // 4. FADE BACK IN
         if (blackScreenFade != null)
         {
             while (blackScreenFade.alpha > 0f)
@@ -192,55 +249,13 @@ public class MazeManager : MonoBehaviour
             }
         }
 
-        // 5. UNFREEZE THE PLAYER
         if (cc != null) cc.enabled = true;
         if (rb != null) rb.isKinematic = false;
+
+        if (playerMovementScript != null) playerMovementScript.enabled = true;
+        if (playerMouseLookScript != null) playerMouseLookScript.enabled = true;
     }
 
-    private IEnumerator GameOverSequence()
-    {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            CharacterController cc = player.GetComponent<CharacterController>();
-            if (cc != null) cc.enabled = false; // Freeze player
-        }
-
-        Cursor.lockState = CursorLockMode.None; // Free the mouse
-        Cursor.visible = true;
-
-        // 1. Fade to Black first
-        if (blackScreenFade != null)
-        {
-            while (blackScreenFade.alpha < 1f)
-            {
-                blackScreenFade.alpha += Time.deltaTime * fadeSpeed;
-                yield return null;
-            }
-        }
-
-        // 2. Fade in the UI second
-        if (gameOverUI != null)
-        {
-            while (gameOverUI.alpha < 1f)
-            {
-                gameOverUI.alpha += Time.deltaTime * fadeSpeed;
-                yield return null;
-            }
-            gameOverUI.blocksRaycasts = true; // Let the buttons be clicked
-            gameOverUI.interactable = true;
-        }
-    }
-
-    // --- BUTTON FUNCTIONS ---
-
-    public void RestartLoop()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
-
-    public void QuitToMenu()
-    {
-        SceneManager.LoadScene(mainMenuSceneName);
-    }
+    public void RestartLoop() { SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex); }
+    public void QuitToMenu() { SceneManager.LoadScene(mainMenuSceneName); }
 }
